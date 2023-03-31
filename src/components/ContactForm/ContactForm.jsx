@@ -1,7 +1,9 @@
+import { useSelector, useDispatch } from 'react-redux';
+import { addContact } from 'redux/contactsSlice';
+import { getContacts } from 'redux/selectors';
 import { Formik } from 'formik';
 import { object, string } from 'yup';
 import 'yup-phone';
-import PropTypes from 'prop-types';
 import {
   FormikForm,
   Label,
@@ -10,7 +12,10 @@ import {
   FormBtn,
 } from './ContactForm.styled';
 
-export const ContactForm = ({ onFormSubmit }) => {
+export const ContactForm = () => {
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
+
   const initialValues = {
     name: '',
     number: '',
@@ -36,12 +41,27 @@ export const ContactForm = ({ onFormSubmit }) => {
       .required('Required'),
   });
 
+  const handleSubmit = (values, { resetForm }) => {
+    const check = contacts.filter(
+      contact => contact.name.toLowerCase() === values.name.toLowerCase()
+    );
+    if (check.length) {
+      alert(`${values.name} is already in contacts`);
+    } else {
+      dispatch(addContact(values));
+      resetForm({
+        name: '',
+        number: '',
+      });
+    }
+  };
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={FormScheme}
       onSubmit={(values, actions) => {
-        onFormSubmit(values, actions);
+        handleSubmit(values, actions);
       }}
     >
       <FormikForm autoComplete="off">
@@ -59,8 +79,4 @@ export const ContactForm = ({ onFormSubmit }) => {
       </FormikForm>
     </Formik>
   );
-};
-
-ContactForm.propTypes = {
-  onFormSubmit: PropTypes.func.isRequired,
 };
