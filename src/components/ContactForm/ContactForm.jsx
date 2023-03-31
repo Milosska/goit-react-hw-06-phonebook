@@ -20,7 +20,6 @@ export const ContactForm = () => {
     name: '',
     number: '',
   };
-
   const FormScheme = object({
     name: string()
       .matches(/^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/, {
